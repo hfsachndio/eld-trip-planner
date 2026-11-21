@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://eld-trip-planner-six-mu.vercel.app/sitemap.xml

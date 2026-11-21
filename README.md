@@ -1,5 +1,7 @@
 # ELD Trip Planner
 
+**Live app:** https://eld-trip-planner-six-mu.vercel.app · **API:** https://eld-trip-planner-api-seven.vercel.app/api/plan-trip/ (POST)
+
 A full-stack app that takes a trip's **current location, pickup location,
 dropoff location, and current 70-hour/8-day cycle hours used**, then returns:
 
@@ -39,7 +41,9 @@ python3 -m venv venv
 source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 cp .env.example .env            # edit if needed
+export DJANGO_DEBUG=True        # debug is off unless you turn it on
 python manage.py runserver
+python manage.py test planner   # HOS engine + API tests
 ```
 
 The API will be at `http://localhost:8000/api/plan-trip/` (POST).
@@ -87,36 +91,21 @@ paper log (`Off Duty`, `Sleeper Berth`, `Driving`, `On Duty (Not Driving)`).
 
 ## Deployment
 
-### Backend → Render (or Railway/Fly.io — any Python host works)
+Both parts run on **Vercel** (free Hobby plan) from the `main` branch:
 
-1. Push this repo to GitHub.
-2. Create a new **Web Service** on [render.com](https://render.com), point it
-   at the repo, root directory `backend`.
-3. Build command: `pip install -r requirements.txt`
-   Start command: `gunicorn eld_backend.wsgi --log-file -`
-4. Add env vars from `backend/.env.example` (set `DJANGO_DEBUG=False`).
-5. Deploy — note the resulting URL, e.g. `https://your-app.onrender.com`.
+| Part | Vercel project | Root directory |
+| --- | --- | --- |
+| Frontend (React + Vite) | `eld-trip-planner` | `frontend` |
+| Backend (Django REST API) | `eld-trip-planner-api` | `backend` |
 
-### Frontend → Vercel
+Backend environment variables: `DJANGO_SECRET_KEY`, `DJANGO_DEBUG=False`.
+Frontend environment variable: `VITE_API_BASE_URL` (the API URL, no trailing slash).
 
-1. Import the repo on [vercel.com](https://vercel.com), set **root directory**
-   to `frontend`.
-2. Framework preset: Vite.
-3. Add env var `VITE_API_BASE_URL` = your Render backend URL (no trailing slash).
-4. Deploy.
+The frontend includes Vercel Web Analytics and Speed Insights (free tier, cookie-free).
+GitHub Actions runs the backend tests and the frontend build on every push.
 
-### CORS
-
-The backend has `CORS_ALLOW_ALL_ORIGINS = True` for simplicity in this
-assessment; lock this down to your Vercel domain for production use.
+The API is stateless and public, so CORS allows any origin.
 
 ---
 
-## Still to do before submitting the assessment
-
-This repo contains the full app. You still need to, from your own accounts:
-
-1. `git init`, commit, and push this to a **GitHub repo**.
-2. Deploy backend + frontend (links above) and confirm the hosted version works.
-3. Record a **3–5 min Loom** walking through the app and the code.
-4. Submit the GitHub link, hosted link, and Loom link.
+Designed and developed by Hafsah Zulfiqar.

@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 import requests
 from rest_framework.decorators import api_view
@@ -53,9 +53,9 @@ def osrm_route(points):
 def plan_trip(request):
     payload = request.data
 
-    current_location = payload.get("current_location", "").strip()
-    pickup_location = payload.get("pickup_location", "").strip()
-    dropoff_location = payload.get("dropoff_location", "").strip()
+    current_location = str(payload.get("current_location") or "").strip()
+    pickup_location = str(payload.get("pickup_location") or "").strip()
+    dropoff_location = str(payload.get("dropoff_location") or "").strip()
     cycle_used = payload.get("current_cycle_used_hours", 0)
 
     if not (current_location and pickup_location and dropoff_location):
@@ -99,7 +99,7 @@ def plan_trip(request):
         duration_hours=route_legs[1]["duration"] / 3600.0,
     )
 
-    start_dt = datetime.utcnow().replace(second=0, microsecond=0)
+    start_dt = datetime.now(timezone.utc).replace(tzinfo=None, second=0, microsecond=0)
 
     result = simulate_trip(
         start_datetime=start_dt,
